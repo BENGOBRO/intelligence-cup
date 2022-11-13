@@ -1,0 +1,11 @@
+HELP.md
+target/
+mvnw
+mvnw.cmd
+.mvn
+
+/logs
+
+### IntelliJ IDEA ###
+.idea
+
