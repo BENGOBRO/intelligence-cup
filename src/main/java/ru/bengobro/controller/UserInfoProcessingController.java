@@ -5,12 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import org.springframework.web.bind.annotation.*;
-import ru.bengobro.model.ResponseInfo;
+import ru.bengobro.model.RequestInfo;
 import ru.bengobro.model.User;
 import ru.bengobro.service.impl.UserInfoProcessingServiceImpl;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -25,9 +25,9 @@ public class UserInfoProcessingController {
             content = { @Content(mediaType = "application/json",
                     schema = @Schema(implementation = User.class)) })
     @GetMapping("/get_info")
-    public User getUserInfo(@RequestBody ResponseInfo responseInfo,
+    public User getUserInfo(@Valid @RequestBody RequestInfo requestInfo,
                             @RequestHeader Map<String, String> accessHeader) {
         return userInfoProcessingService
-                .getUserInfo(responseInfo, accessHeader.get("vk_service_token"));
+                .getUserInfo(requestInfo, accessHeader.get("vk_service_token"));
     }
 }

@@ -6,16 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ResponseInfo {
+public class RequestInfo {
 
     @JsonProperty(value = "user_id")
+    @NotBlank
     private int userId;
 
     @JsonProperty(value = "group_id")
+    @NotBlank
     private int groupId;
 
 }

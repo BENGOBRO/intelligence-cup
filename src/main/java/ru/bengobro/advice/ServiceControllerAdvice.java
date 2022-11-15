@@ -1,9 +1,6 @@
 package ru.bengobro.advice;
 
-import com.vk.api.sdk.exceptions.ApiAccessException;
-import com.vk.api.sdk.exceptions.ApiAuthException;
-import com.vk.api.sdk.exceptions.ApiException;
-import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.exceptions.*;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +25,6 @@ public class ServiceControllerAdvice {
     }
 
     @ExceptionHandler(ApiAuthException.class)
-    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "Problems with authorization in VK")
     public ResponseEntity<ErrorMessage> authException(ApiAuthException e) {
         log.error(e);
         return ResponseEntity
@@ -37,12 +33,19 @@ public class ServiceControllerAdvice {
     }
 
     @ExceptionHandler(ApiAccessException.class)
-    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE, reason = "No rights to access information")
     public ResponseEntity<ErrorMessage> accessException(ApiAccessException e) {
         log.error(e);
         return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
                 .body(new ErrorMessage(TypeOfError.API_ACCESS.getMessage()));
+    }
+
+    @ExceptionHandler(ApiAccessGroupException.class)
+    public ResponseEntity<ErrorMessage> accessGroupException(ApiAccessGroupException e) {
+        log.error(e);
+        return ResponseEntity
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .body(new ErrorMessage(TypeOfError.API_GROUP_ACCESS.getMessage()));
     }
 
     @ExceptionHandler(ApiException.class)

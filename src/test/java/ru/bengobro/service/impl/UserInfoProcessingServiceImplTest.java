@@ -1,14 +1,12 @@
-package ru.bengobro.dispathcer.service;
+package ru.bengobro.service.impl;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.bengobro.model.ResponseInfo;
+import ru.bengobro.model.RequestInfo;
 import ru.bengobro.model.User;
-import ru.bengobro.service.impl.ApiServiceImpl;
-import ru.bengobro.service.impl.UserInfoProcessingServiceImpl;
 
-public class ReceiverServiceImplTest {
+public class UserInfoProcessingServiceImplTest {
 
     private final static String vkServiceToken = "d9b83319d9b83319d9b83319eedaa97915dd9b8d9b83319bad93186009debb836fa184b";
     private UserInfoProcessingServiceImpl receiverService;
@@ -23,7 +21,7 @@ public class ReceiverServiceImplTest {
     @Test
     void getUserInfo_shouldReturnSomeInfo() {
         User user = getUser();
-        ResponseInfo responseInfo = getData();
+        RequestInfo responseInfo = getData();
 
         User result = receiverService.getUserInfo(responseInfo, vkServiceToken);
 
@@ -43,13 +41,12 @@ public class ReceiverServiceImplTest {
         return user;
     }
 
-    private ResponseInfo getData() {
-        ResponseInfo responseInfo = new ResponseInfo();
+    private RequestInfo getData() {
+        RequestInfo requestInfo = new RequestInfo();
 
-        responseInfo.setUserId(237595431);
-        responseInfo.setGroupId(103408267);
+        requestInfo.setUserId(237595431);
+        requestInfo.setGroupId(103408267);
 
-        return responseInfo;
+        return requestInfo;
     }
-
 }
