@@ -1,44 +1,40 @@
 package ru.bengobro.service.impl;
 
 import com.vk.api.sdk.client.Lang;
-import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.groups.responses.IsMemberResponse;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import ru.bengobro.model.RequestInfo;
 import ru.bengobro.model.User;
 import ru.bengobro.service.ApiService;
 
 @Component
+@RequiredArgsConstructor
 public class ApiServiceImpl implements ApiService {
 
     private final VkApiClient vkApiClient;
-    private ServiceActor actor;
-
     @Value("${application.id}")
     private int applicationId;
 
-    public ApiServiceImpl() {
-        TransportClient transportClient = new HttpTransportClient();
-        this.vkApiClient = new VkApiClient(transportClient);
-    }
-
-    public void init(String accessToken) {
-        actor = new ServiceActor(applicationId, accessToken);
-    }
-
     @Cacheable("fullName")
-    public User getFullName(int userId) {
+    public User getFullName(RequestInfo responseInfo, String accessToken) {
+
+        ServiceActor actor = new ServiceActor(applicationId, accessToken);
+        var userId = responseInfo.getUserId();
+        var groupId = responseInfo.getGroupId();
+
         GetResponse response;
         try {
-            response = vkApiClient.users()
+            response = vkApiClient
+                    .users()
                     .get(actor)
                     .userIds(String.valueOf(userId))
                     .fields(Fields.FIRST_NAME_NOM, Fields.FIRST_NAME_NOM, Fields.NICKNAME)
@@ -47,20 +43,38 @@ public class ApiServiceImpl implements ApiService {
         } catch (ApiException | ClientException e) {
             throw new RuntimeException(e);
         }
-        return new User(response.getLastName(), response.getFirstName(), response.getNickname(), false);
+
+        boolean isMember = "1".equals(
+                isMember(
+                        userId,
+                        groupId,
+                        accessToken)
+        );
+
+        return User.builder()
+                .firstName(response.getFirstName())
+                .lastName(response.getLastName())
+                .middleName(response.getNickname())
+                .member(isMember)
+                .build();
+
     }
 
     @Cacheable(value = "isMember", key = "{#userId, #groupId}")
-    public String isMember(int userId, int groupId)  {
+    public String isMember(int userId, int groupId, String accessToken)  {
+        ServiceActor actor = new ServiceActor(applicationId, accessToken);
+
         IsMemberResponse response;
         try {
-            response = vkApiClient.groups()
+            response = vkApiClient
+                    .groups()
                     .isMember(actor, String.valueOf(groupId))
                     .userId(userId)
                     .execute();
         } catch (ApiException | ClientException e) {
             throw new RuntimeException(e);
         }
+
         return response.getValue();
     }
 }

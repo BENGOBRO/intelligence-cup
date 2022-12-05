@@ -3,11 +3,8 @@ package ru.bengobro.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
+@Builder(toBuilder = true)
 public class User {
 
     @JsonProperty(value = "last_name")
