@@ -1,5 +1,7 @@
 package ru.bengobro.service.impl;
 
+import com.vk.api.sdk.client.VkApiClient;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +15,8 @@ public class UserInfoProcessingServiceImplTest {
 
     @BeforeEach
     public void init() {
-        ApiServiceImpl apiService = new ApiServiceImpl();
+        ApiServiceImpl apiService = new ApiServiceImpl(new VkApiClient(new HttpTransportClient()));
         receiverService = new UserInfoProcessingServiceImpl(apiService);
-        apiService.init(vkServiceToken);
     }
 
     @Test
@@ -31,14 +32,13 @@ public class UserInfoProcessingServiceImplTest {
 
     private User getUser() {
 
-        User user = new User();
-
-        user.setLastName("Стародубцев");
-        user.setFirstName("Михаил");
-        user.setMiddleName("");
-        user.setMember(false);
-
-        return user;
+        return User
+                .builder()
+                .firstName("Михаил")
+                .lastName("Стародубцев")
+                .middleName("")
+                .member(false)
+                .build();
     }
 
     private RequestInfo getData() {
